@@ -1,62 +1,138 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-    top: 825,
-    position: "absolute"
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: 'auto',
   },
-});
+  cardHeader: {
+    padding: theme.spacing(1, 2),
+  },
+  list: {
+    width: 200,
+    height: 230,
+    backgroundColor: theme.palette.background.paper,
+    overflow: 'auto',
+  },
+  button: {
+    margin: theme.spacing(0.5, 0),
+  },
+}));
 
-export default function DenseTable(props) {
+function not(a, b) {
+  return a.filter((value) => b.indexOf(value) === -1);
+}
+
+function intersection(a, b) {
+  return a.filter((value) => b.indexOf(value) !== -1);
+}
+
+export default function TransferList() {
   const classes = useStyles();
-  const studySpots = props.studySpots
+  const [checked, setChecked] = React.useState([]);
+  const [left, setLeft] = React.useState([0, 1, 2, 3]);
+  const [right, setRight] = React.useState([4, 5, 6, 7]);
 
-  function createRows(data) {
-    let x, rows = [];
-    for (let i = 0; i < data.length; i++) {
-      let row = {};
-      for (x in data[i]) {
-        console.log(data[i].[x])
-        row[x]=data[i].[x]
-      }
-      rows.push(row);
+  const leftChecked = intersection(checked, left);
+  const rightChecked = intersection(checked, right);
+
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
     }
-    return rows;
-  }
 
-  const rows = createRows(studySpots);
+    setChecked(newChecked);
+  };
+
+  const numberOfChecked = (items) => intersection(checked, items).length;
+
+
+  const handleCheckedRight = () => {
+    setRight(right.concat(leftChecked));
+    setLeft(not(left, leftChecked));
+    setChecked(not(checked, leftChecked));
+  };
+
+  const handleCheckedLeft = () => {
+    setLeft(left.concat(rightChecked));
+    setRight(not(right, rightChecked));
+    setChecked(not(checked, rightChecked));
+  };
+
+  const customList = (title, items) => (
+    <Card>
+      <CardHeader
+        className={classes.cardHeader}
+        title={title}
+        subheader={`${numberOfChecked(items)}/${items.length} selected`}
+      />
+      <Divider />
+      <List className={classes.list} dense component="div" role="list">
+        {items.map((value) => {
+          const labelId = `transfer-list-all-item-${value}-label`;
+
+          return (
+            <ListItem key={value} role="listitem" button onClick={handleToggle(value)}>
+              <ListItemText id={labelId} primary={`List item ${value}`} />
+              <ListItemIcon>
+                <Checkbox
+                  checked={checked.indexOf(value) !== -1}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ 'aria-labelledby': labelId }}
+                />
+              </ListItemIcon>
+            </ListItem>
+          );
+        })}
+        <ListItem />
+      </List>
+    </Card>
+  );
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="left">Address</TableCell>
-            <TableCell align="center">Description</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="left">{row.address}</TableCell>
-              <TableCell align="center">{row.description}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Grid container spacing={5} justify="center" alignItems="center" className={classes.root}>
+      <Grid item>{customList('Results', left)}</Grid>
+      <Grid item>
+        <Grid container direction="column" alignItems="center">
+          <Button
+            variant="outlined"
+            size="small"
+            className={classes.button}
+            onClick={handleCheckedRight}
+            disabled={leftChecked.length === 0}
+            aria-label="move selected right"
+          >
+            &gt;
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            className={classes.button}
+            onClick={handleCheckedLeft}
+            disabled={rightChecked.length === 0}
+            aria-label="move selected left"
+          >
+            &lt;
+          </Button>
+        </Grid>
+      </Grid>
+      <Grid item>{customList('Nominations', right)}</Grid>
+    </Grid>
   );
 }
