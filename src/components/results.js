@@ -37,11 +37,15 @@ function intersection(a, b) {
   return a.filter((value) => b.indexOf(value) !== -1);
 }
 
-export default function TransferList() {
+export default function TransferList(props) {
   const classes = useStyles();
+  const mappedTestArr = props.moviesData.map((d) => `${d.Title} (${d.Year})`);
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
+  console.log(mappedTestArr);
+
+  const [left, setLeft] = React.useState(mappedTestArr);
+  const [right, setRight] = React.useState([]);
+  console.log(left);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -55,12 +59,10 @@ export default function TransferList() {
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
     setChecked(newChecked);
   };
 
   const numberOfChecked = (items) => intersection(checked, items).length;
-
 
   const handleCheckedRight = () => {
     setRight(right.concat(leftChecked));
@@ -88,7 +90,7 @@ export default function TransferList() {
 
           return (
             <ListItem key={value} role="listitem" button onClick={handleToggle(value)}>
-              <ListItemText id={labelId} primary={`List item ${value}`} />
+              <ListItemText id={labelId} primary={value} />
               <ListItemIcon>
                 <Checkbox
                   checked={checked.indexOf(value) !== -1}
@@ -118,7 +120,7 @@ export default function TransferList() {
             disabled={leftChecked.length === 0}
             aria-label="move selected right"
           >
-            &gt;
+            Nominate &gt;
           </Button>
           <Button
             variant="outlined"
@@ -128,7 +130,7 @@ export default function TransferList() {
             disabled={rightChecked.length === 0}
             aria-label="move selected left"
           >
-            &lt;
+            Remove Nomination &lt;
           </Button>
         </Grid>
       </Grid>

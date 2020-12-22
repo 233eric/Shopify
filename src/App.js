@@ -5,7 +5,6 @@ import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import Results from './components/results'
-import { OutlinedInput } from "@material-ui/core";
 
 const useStyles = {
   input: {
@@ -16,7 +15,6 @@ const useStyles = {
     margin: 10
   },
 };
-
 
 class App extends React.Component {
   constructor(props) {
@@ -34,17 +32,17 @@ class App extends React.Component {
   handleSearch = async (search) => {
     const moviesData =  await getMovies(search);
     this.setState({ moviesData: moviesData.Search });
-    console.log(this.state.moviesData);
+    //console.log(this.state.moviesData);
   }
 
   render() {
     const { classes } = this.props;
-    let listItems = [];
-    if (this.state.moviesData.length !== 0){
-      listItems = this.state.moviesData.map((d) => 
-        <li key={d.imdbID}>{d.Title} ({d.Year})</li> 
-      );
-    }
+    // let listItems = [];
+    // if (this.state.moviesData.length !== 0){
+    //   listItems = this.state.moviesData.map((d) => 
+    //     <li key={d.imdbID}>{d.Title} ({d.Year})</li> 
+    //   );
+    // }
     return (
       <div>
         <InputBase
@@ -56,8 +54,8 @@ class App extends React.Component {
         <IconButton color="primary" variant="contained" onClick={() => this.handleSearch(this.state.input)}>
           <SearchIcon />
         </IconButton>
-        {listItems}
-        <Results />
+        {/* {listItems} */}
+        <Results moviesData={this.state.moviesData} />
       </div>
     );
   }
