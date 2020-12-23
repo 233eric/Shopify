@@ -22,6 +22,7 @@ class App extends React.Component {
     this.state = { 
       input: "",
       moviesData: [],
+      showError: false
     };
   }
 
@@ -31,18 +32,20 @@ class App extends React.Component {
 
   handleSearch = async (search) => {
     const moviesData =  await getMovies(search);
-    this.setState({ moviesData: moviesData.Search });
-    //console.log(this.state.moviesData);
+    if (moviesData.Response === "True") {
+      this.setState({ 
+        moviesData: moviesData.Search,
+        showError: false
+       });
+    }
+    else {
+      this.setState({showError: true})
+    }
   }
 
   render() {
     const { classes } = this.props;
-    // let listItems = [];
-    // if (this.state.moviesData.length !== 0){
-    //   listItems = this.state.moviesData.map((d) => 
-    //     <li key={d.imdbID}>{d.Title} ({d.Year})</li> 
-    //   );
-    // }
+
     return (
       <div>
         <InputBase
@@ -50,11 +53,16 @@ class App extends React.Component {
           placeholder="Search OMDB"
           onChange={e => this.updateInput(e.target.value)}
           value={this.state.input}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              this.handleSearch(this.state.input);
+            }
+         }}
         />
         <IconButton color="primary" variant="contained" onClick={() => this.handleSearch(this.state.input)}>
           <SearchIcon />
         </IconButton>
-        {/* {listItems} */}
+        {this.state.showError ? <p>No Search Results Found</p> : null}
         <Results moviesData={this.state.moviesData} />
       </div>
     );
