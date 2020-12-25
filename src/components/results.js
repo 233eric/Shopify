@@ -11,6 +11,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Alert from '@material-ui/lab/Alert';
+import Zoom from '@material-ui/core/Zoom';
+import Collapse from '@material-ui/core/Collapse';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -23,11 +26,13 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     width: 500,
-    height: 230,
-    backgroundColor: '#e3f2fd',
+    height: 500,
+    color: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.background,
     overflow: 'auto',
   },
   button: {
+    backgroundColor: theme.palette.secondary.main,
     margin: theme.spacing(0.5, 0),
   },
 }));
@@ -81,10 +86,9 @@ export default function TransferList(props) {
   };
 
   React.useEffect(() => {
-    const mappedTestArr = props.moviesData.map((d) => `${d.Title} (${d.Year})`);
+    const mappedTestArr = props.moviesData.map((d) => `${d.Title} (${d.Year})`).filter((e)  => !right.includes(e));
     setLeft(mappedTestArr);
-    setRight([]);
-  },[props.moviesData]);
+  },[props.moviesData, right]);
 
   React.useEffect(() => {
     if (right.length === 5) {
@@ -106,11 +110,14 @@ export default function TransferList(props) {
         subheader={`${numberOfChecked(items)}/${items.length} selected`}
       />
       <Divider />
+        <Collapse appear in={banner && title === "Nominations"} timeout={1500}>
+          <Alert severity="success">You Have Nominated 5 Movies!</Alert>
+        </Collapse>
       <List className={classes.list} dense component="div" role="list">
         {items.map((value) => {
           const labelId = `transfer-list-all-item-${value}-label`;
 
-          return (
+          return (<Zoom in timeout={1000}>
             <ListItem key={value} role="listitem" button onClick={handleToggle(value)}>
               <ListItemText id={labelId} primary={value} />
               <ListItemIcon>
@@ -122,6 +129,7 @@ export default function TransferList(props) {
                 />
               </ListItemIcon>
             </ListItem>
+          </Zoom>
           );
         })}
         <ListItem />
@@ -131,7 +139,6 @@ export default function TransferList(props) {
 
   return (
     <>
-      {banner ? <Alert severity="success">You Have Nominated 5 Movies!</Alert> : null}
       <Grid container spacing={5} justify="center" alignItems="center" className={classes.root}>
         <Grid item>{customList('Results', left)}</Grid>
         <Grid item>
