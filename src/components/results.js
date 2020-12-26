@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, withTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Card from '@material-ui/core/Card';
@@ -118,11 +118,11 @@ export default function TransferList(props) {
         <Alert severity="success">You Have Nominated 5 Movies!</Alert>
       </Collapse>
       <List className={classes.list} dense component="div" role="list">
-        {items.map((value) => {
+        {items.map((value, i) => {
           const labelId = `transfer-list-all-item-${value}-label`;
 
           return (
-          <Zoom in timeout={1000}>
+          <Zoom in timeout={1000} key={i}>
             <ListItem key={value} role="listitem" button onClick={handleToggle(value)}>
               <ListItemText id={labelId} primary={value} />
               <ListItemIcon>
