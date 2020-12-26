@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withTheme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Card from '@material-ui/core/Card';
@@ -22,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
   },
   cardHeader: {
     padding: theme.spacing(1, 2),
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.headerText,
   },
   list: {
     width: 500,
@@ -110,14 +111,18 @@ export default function TransferList(props) {
         subheader={`${numberOfChecked(items)}/${items.length} selected`}
       />
       <Divider />
-        <Collapse appear in={banner && title === "Nominations"} timeout={1500}>
-          <Alert severity="success">You Have Nominated 5 Movies!</Alert>
-        </Collapse>
+      <Collapse appear in={right.length + leftChecked.length > 5 && title === "Results"} timeout={1500}>
+        <Alert severity="warning">You can only Nominate 5 Movies</Alert>
+      </Collapse>
+      <Collapse appear in={banner && title === "Nominations"} timeout={1500}>
+        <Alert severity="success">You Have Nominated 5 Movies!</Alert>
+      </Collapse>
       <List className={classes.list} dense component="div" role="list">
         {items.map((value) => {
           const labelId = `transfer-list-all-item-${value}-label`;
 
-          return (<Zoom in timeout={1000}>
+          return (
+          <Zoom in timeout={1000}>
             <ListItem key={value} role="listitem" button onClick={handleToggle(value)}>
               <ListItemText id={labelId} primary={value} />
               <ListItemIcon>

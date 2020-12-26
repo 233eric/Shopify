@@ -1,23 +1,25 @@
 import React from "react";
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 import { getMovies } from "./utils/apiHelper";
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import Results from './components/results'
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import shoppies from './shoppies.jpg';
+import {Box, Grid} from '@material-ui/core';
 
 
 const theme = createMuiTheme({
   typography: {
     fontSize: 18,
     fontFamily:  "Helvetica, Arial, sans-serif",
-    fontWeightBold: 800
   },
   palette: {
     primary: {
       main: "#004c3f",
-      background: "#FFF5EE"
+      background: "#FFF5EE",
+      headerText: "#FFFFFF"
     },
     secondary: {
       main: "#008060",
@@ -25,23 +27,40 @@ const theme = createMuiTheme({
   },
 });
 
-const useStyles = makeStyles((theme) => ({
-  
-  input: {
+const useStyles = {
+  secondaryInput: {
     width: 300,
     fontSize: 16,
     padding: 10,
-    margin: 10
   },
-}));
+  searchIcon: {
+   "margin-top": 10,
+   fontSize: 35
+  },
+  logo: {
+    width: '50%',
+    display: 'block',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    padding: 20
+  },
+  input: {
+    width: '50%',
+    display: 'block',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: '10%'
+  }
+};
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
       input: "",
+      showResult: false,
       moviesData: [],
-      showError: false
+      showError: false,
     };
   }
 
@@ -50,11 +69,11 @@ class App extends React.Component {
   };
 
   handleSearch = async (search) => {
-
     const moviesData =  await getMovies(search);
     if (moviesData.Response === "True") {
       this.setState({ 
         moviesData: moviesData.Search,
+        showResult: true,
         showError: false
        });
     }
@@ -68,24 +87,54 @@ class App extends React.Component {
 
     return (
       <ThemeProvider theme={theme}>
-        <TextField
-          variant="outlined"
-          className={classes.input}
-          error={this.state.showError}
-          helperText={this.state.showError && "No Search Results Found"}
-          placeholder="Search OMDB"
-          onChange={e => this.updateInput(e.target.value)}
-          value={this.state.input}         
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              this.handleSearch(this.state.input);
-            }
-         }}
-        />
-        <IconButton color="primary" variant="contained" onClick={() => this.handleSearch(this.state.input)}>
-          <SearchIcon />
-        </IconButton>
-        <Results moviesData={this.state.moviesData} />
+        {this.state.showResult ? 
+        <Box>
+          <TextField
+            variant="outlined"
+            className={classes.secondaryInput}
+            error={this.state.showError}
+            helperText={this.state.showError && "No Search Results Found"}
+            placeholder="Search OMDB"
+            onChange={e => this.updateInput(e.target.value)}
+            value={this.state.input}         
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                this.handleSearch(this.state.input);
+              }
+          }}
+          />
+          <IconButton color="primary" variant="contained" onClick={() => this.handleSearch(this.state.input)}>
+            <SearchIcon className={classes.searchIcon}/>
+          </IconButton>
+          <Results moviesData={this.state.moviesData} /> 
+        </Box>
+        : 
+        <Box className={classes.input}>
+        <img src={shoppies} alt='shoppies logo' className={classes.logo}/>
+          <Grid container>
+            <Grid item xs={10}>
+              <TextField
+                variant="outlined"
+                fullWidth
+                error={this.state.showError}
+                helperText={this.state.showError && "No Search Results Found"}
+                placeholder="Search OMDB"
+                onChange={e => this.updateInput(e.target.value)}
+                value={this.state.input}         
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    this.handleSearch(this.state.input);
+                  }
+              }}
+              />
+            </Grid>
+            <Grid item>
+              <IconButton color="primary" variant="contained" onClick={() => this.handleSearch(this.state.input)}>
+               <SearchIcon/>
+              </IconButton>
+            </Grid>
+          </Grid>
+        </Box>}
       </ThemeProvider>
     );
   }
