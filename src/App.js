@@ -1,14 +1,10 @@
 import React from "react";
-import { withStyles } from '@material-ui/core/styles';
 import { getMovies } from "./utils/apiHelper";
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
+import { TextField, IconButton, Box, Divider, Grid, Zoom} from '@material-ui/core';
+import { withStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
-import Results from './components/results'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Results from './components/results';
 import shoppies from './shoppies.jpg';
-import {Box, Divider, Grid} from '@material-ui/core';
-import Zoom from '@material-ui/core/Zoom';
 
 
 const theme = createMuiTheme({
@@ -53,6 +49,10 @@ const useStyles = {
     marginLeft: 'auto',
     marginRight: 'auto',
     marginTop: '10%'
+  },
+  smallImg: {
+    width: 150,
+    height: 50
   }
 };
 
@@ -94,7 +94,12 @@ class App extends React.Component {
         <Box>
           <Box className={classes.secondaryInput}>
           <Grid container>
-            <Grid item xs={10}>
+            <Grid item >
+              <a href="/">
+                <img src={shoppies} alt='shoppies logo' className={classes.smallImg}/> 
+              </a>
+            </Grid>
+            <Grid item xs={8}>
               <Zoom in timeout={1500}>
                 <TextField
                   variant="outlined"
