@@ -80,12 +80,10 @@ export default function TransferList(props) {
 
   React.useEffect(() => {
     if (right.length === 5) {
-      console.log("show banner");
       showBanner(true);
 
     }
     else {
-      console.log("dont show banner");
       showBanner(false);
     }
     },[right]);
